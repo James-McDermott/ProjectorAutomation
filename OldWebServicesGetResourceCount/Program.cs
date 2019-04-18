@@ -14,6 +14,7 @@ namespace OldWebServicesGetResourceCount
         {
             Program program = new Program();
             Console.WriteLine("Projector console app running....\n");
+            //Running
 
             //create an instance of the Projector Service
             var svc = new OpsProjectorSvcSoapClient();
