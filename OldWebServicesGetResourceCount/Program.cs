@@ -1,7 +1,7 @@
 ﻿using System;
-using OldWebServicesGetResourceCount.ProjectorWebServicesV2;
+using ProjectorAutomation.ProjectorWebServicesV2;
 
-namespace OldWebServicesGetResourceCount
+namespace ProjectorAutomation
 {
     class Program
     {

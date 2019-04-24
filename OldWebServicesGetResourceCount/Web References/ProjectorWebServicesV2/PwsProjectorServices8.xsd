@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:tns="http://projectorpsa.com/DataContracts/Shared/DataAdministration/" elementFormDefault="qualified" targetNamespace="http://projectorpsa.com/DataContracts/Shared/DataAdministration/" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd4" namespace="http://projectorpsa.com/DataContracts/Shared/Common/" />
+  <xs:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+  <xs:import namespace="http://schemas.xmlsoap.org/wsdl/" />
   <xs:complexType name="ArrayOfPwsResourceAvailableTimeOffElement">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="PwsResourceAvailableTimeOffElement" nillable="true" type="tns:PwsResourceAvailableTimeOffElement" />

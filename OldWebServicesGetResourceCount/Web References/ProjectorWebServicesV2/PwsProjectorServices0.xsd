@@ -3,6 +3,8 @@
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd4" namespace="http://projectorpsa.com/DataContracts/Shared/Common/" />
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd3" namespace="http://projectorpsa.com/DataContracts/Requests/" />
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd5" namespace="http://projectorpsa.com/CommonServices/" />
+  <xs:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+  <xs:import namespace="http://schemas.xmlsoap.org/wsdl/" />
   <xs:complexType name="PwsGetEngagementListRq">
     <xs:complexContent mixed="false">
       <xs:extension xmlns:q1="http://projectorpsa.com/DataContracts/Requests/" base="q1:PwsRequest">

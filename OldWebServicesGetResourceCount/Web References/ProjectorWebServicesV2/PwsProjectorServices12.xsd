@@ -7,6 +7,8 @@
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd11" namespace="http://projectorpsa.com/DataContracts/Shared/TimeAndCost/" />
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd12" namespace="http://projectorpsa.com/DataContracts/Shared/DocumentManagement/" />
   <xs:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd13" namespace="http://projectorpsa.com/DataContracts/Shared/Report/" />
+  <xs:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+  <xs:import namespace="http://schemas.xmlsoap.org/wsdl/" />
   <xs:element name="PwsGetProjectWorkspaces">
     <xs:complexType>
       <xs:sequence>
