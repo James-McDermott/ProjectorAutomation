@@ -34,16 +34,18 @@ namespace ProjectorAutomation
             PwsGetUserRs getUserRs = pwsProjectorServices.PwsGetUser(getUserRq);
             Console.WriteLine(getUserRs.Status);
             PwsUserElement[] pwsUsers = getUserRs.Users;
+            Console.WriteLine("\n============ User Details ============\n");
             Console.WriteLine("User:");
             Console.WriteLine(pwsUsers[0].ResourceIdentity.ResourceDisplayName);
-            Console.WriteLine("Email Address:");
+            Console.WriteLine("\nEmail Address:");
             Console.WriteLine(pwsUsers[0].UserDetail.EmailAddress);
-            Console.WriteLine("Mobile:");
+            Console.WriteLine("\nMobile:");
             Console.WriteLine(pwsUsers[0].UserDetail.MobilePhone);
-            Console.WriteLine("Start Date:");
+            Console.WriteLine("\nStart Date:");
             Console.WriteLine(pwsUsers[0].UserDetail.StartDate.ToString());
-            Console.WriteLine("Time Zone:");
+            Console.WriteLine("\nTime Zone:");
             Console.WriteLine(pwsUsers[0].UserDetail.TimeZoneIdentity.TimeZoneIdentifier);
+            Console.WriteLine("\n======================================\n");
         }
 
         private static string Authenticate(ref PwsProjectorServices psc, string accountCode, string userName, string password)

@@ -2,6 +2,8 @@
 <wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://www.opsplanning.com/webservices/public/data" targetNamespace="http://www.opsplanning.com/webservices/public/data" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://www.opsplanning.com/webservices/public/data">
+      <s:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
+      <s:import namespace="http://schemas.xmlsoap.org/wsdl/" />
       <s:element name="GetWebServiceUrl">
         <s:complexType>
           <s:sequence>
