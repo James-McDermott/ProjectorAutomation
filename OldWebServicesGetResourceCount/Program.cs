@@ -7,6 +7,7 @@ namespace OldWebServicesGetResourceCount
     {
         public static void Main(string[] args)
         {
+            //Initialize necessary user details
             PwsProjectorServices pwsProjectorServices = new PwsProjectorServices();
             Console.WriteLine("Username:");
             string username = Console.ReadLine();
@@ -14,7 +15,15 @@ namespace OldWebServicesGetResourceCount
             string password = Console.ReadLine();
             Console.WriteLine("Account:");
             string account = Console.ReadLine();
-            Console.WriteLine(Authenticate(ref pwsProjectorServices, account, username, password));
+            //Authenticate user and print session key
+            string sessionKey = Authenticate(ref pwsProjectorServices, account, username, password);
+            Console.WriteLine(sessionKey);
+            //Using session key create and expense report request, and print out request status
+            PwsGetExpenseReportsRq pwsGetExpenseReportsRq = new PwsGetExpenseReportsRq();
+            pwsGetExpenseReportsRq.SessionTicket = sessionKey;
+            PwsGetExpenseReportsRs pwsGetExpenseReportsRs = pwsProjectorServices.PwsGetExpenseReports(pwsGetExpenseReportsRq);
+            Console.WriteLine(pwsGetExpenseReportsRs.Status);
+
         }
 
         private static string Authenticate(ref PwsProjectorServices psc, string accountCode, string userName, string password)

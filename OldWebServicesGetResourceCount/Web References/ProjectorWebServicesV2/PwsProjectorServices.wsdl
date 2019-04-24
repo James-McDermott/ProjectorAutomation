@@ -41,8 +41,6 @@
       <xsd:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd11" namespace="http://projectorpsa.com/DataContracts/Shared/TimeAndCost/" />
       <xsd:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd12" namespace="http://projectorpsa.com/DataContracts/Shared/DocumentManagement/" />
       <xsd:import schemaLocation="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?xsd=xsd13" namespace="http://projectorpsa.com/DataContracts/Shared/Report/" />
-      <xsd:import namespace="http://schemas.xmlsoap.org/soap/encoding/" />
-      <xsd:import namespace="http://schemas.xmlsoap.org/wsdl/" />
     </xsd:schema>
   </wsdl:types>
   <wsdl:message name="IPwsProjectorServices_PwsGetProjectWorkspaces_InputMessage">
