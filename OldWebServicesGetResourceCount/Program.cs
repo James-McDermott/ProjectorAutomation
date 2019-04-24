@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using ProjectorAutomation.ProjectorWebServicesV2;
 
 namespace ProjectorAutomation
@@ -16,7 +18,8 @@ namespace ProjectorAutomation
             //Console.WriteLine("Account:");
             string account = "CHANGEME";
             //Authenticate user and print session key
-            string sessionKey = Authenticate(ref pwsProjectorServices, account, username, password);
+            Session session = new Session(ref pwsProjectorServices, account, username, password);
+            string sessionKey = session.getSessionTicket();
             Console.WriteLine(sessionKey);
             //Using session key create and expense report request, and print out request status
             PwsGetExpenseReportsRq pwsGetExpenseReportsRq = new PwsGetExpenseReportsRq();
@@ -46,38 +49,23 @@ namespace ProjectorAutomation
             Console.WriteLine("\nTime Zone:");
             Console.WriteLine(pwsUsers[0].UserDetail.TimeZoneIdentity.TimeZoneIdentifier);
             Console.WriteLine("\n======================================\n");
+            //DumpXML(getUserRs);
         }
 
-        private static string Authenticate(ref PwsProjectorServices psc, string accountCode, string userName, string password)
+         /* 
+         *Dump the xml of the request/response passed to it
+         *This is a very large xml, for debug only       
+         *        
+         * requestOrResponseObject - the response/request to be dumped to XML       
+         */
+        private static void DumpXML(object requestOrResponseObject)
         {
-            PwsAuthenticateRs rs = psc.PwsAuthenticate(new PwsAuthenticateRq()
-            {
-                AccountCode = accountCode,
-                UserName = userName,
-                Password = password
-            });
-
-            //If request fails bounce out
-            if (rs.Status != RequestStatus.Ok)
-            {
-                return null;
-            }
-
-            //To prevent infinite recursion, only try to reconnect if RedirectUrl is different from current url
-            if (rs.RedirectUrl != null && psc.Url.StartsWith(rs.RedirectUrl))
-            {
-                return null;
-            }
-
-            //If a RedirectUrl was returned then your account data is on a different server. Retry with new url.
-            if (rs.RedirectUrl != null)
-            {
-                Uri uri = new Uri(psc.Url);
-                psc.Url = rs.RedirectUrl + uri.LocalPath;
-                return Authenticate(ref psc, accountCode, userName, password);
-            }
-
-            return rs.SessionTicket;
+            var serxml = new System.Xml.Serialization.XmlSerializer(requestOrResponseObject.GetType());
+            var ms = new MemoryStream();
+            serxml.Serialize(ms, requestOrResponseObject);
+            string xml = Encoding.UTF8.GetString(ms.ToArray());
+            Console.WriteLine(xml);
+            Console.WriteLine("");
         }
     }
 }

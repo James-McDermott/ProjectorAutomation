@@ -52,6 +52,7 @@
     <Compile Include="Web References\ProjectorWebServicesV1\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
+    <Compile Include="Session.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
