@@ -1,53 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ServiceModel;
-using OldWebServicesGetResourceCount.ProjectorWebServicesV1;
+using OldWebServicesGetResourceCount.ProjectorWebServicesV2;
 
 namespace OldWebServicesGetResourceCount
 {
     class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            Program program = new Program();
-            Console.WriteLine("Projector console app running....\n");
-            //Running
+            PwsProjectorServices pwsProjectorServices = new PwsProjectorServices();
+            Console.WriteLine("Username:");
+            string username = Console.ReadLine();
+            Console.WriteLine("Password:");
+            string password = Console.ReadLine();
+            Console.WriteLine("Account:");
+            string account = Console.ReadLine();
+            Console.WriteLine(Authenticate(ref pwsProjectorServices, account, username, password));
+        }
 
-            //create an instance of the Projector Service
-            var svc = new OpsProjectorSvcSoapClient();
-            var header = new OpsAuthenticationHeader
+        private static string Authenticate(ref PwsProjectorServices psc, string accountCode, string userName, string password)
+        {
+            PwsAuthenticateRs rs = psc.PwsAuthenticate(new PwsAuthenticateRq()
             {
-                AccountName = "yourAccountName",
-                EmailAddress = "yourEmailAddress",
-                Password = "yourPassword"
-            };
-            //Authenticate with server and ensure we have the correct Service URL
-            var getWebServiceUrlRq = new GetWebServiceUrlRq();
-            GetWebServiceUrlRs getWebServiceUrlRs = svc.GetWebServiceUrl(header, getWebServiceUrlRq);
-            if (getWebServiceUrlRs.WebServiceUrl != null)
+                AccountCode = accountCode,
+                UserName = userName,
+                Password = password
+            });
+
+            //If request fails bounce out
+            if (rs.Status != RequestStatus.Ok)
             {
-                var newEndpoint = string.Format("{0}/OpsProjectorWebSvc/OpsProjectorSvc.asmx", getWebServiceUrlRs.WebServiceUrl);
-                Console.WriteLine("Redirecting your endpoint to: \n" + newEndpoint + "\n");
-                svc = new OpsProjectorSvcSoapClient(new BasicHttpsBinding(), new EndpointAddress(newEndpoint));
+                return null;
             }
-            //Retrieve some data from the installation using Rq/Rs
-            var exportResourcesRq = new ExportResourcesRq
+
+            //To prevent infinite recursion, only try to reconnect if RedirectUrl is different from current url
+            if (rs.RedirectUrl != null && psc.Url.StartsWith(rs.RedirectUrl))
             {
-                Parameters = new ExportResourcesRequest
-                {
-                    OnlyCountRows = true
-                }
-            };
-            ExportResourcesRs exportResourcesRs = svc.ExportResources(header, exportResourcesRq);
-            int iResources = exportResourcesRs.Data.RowCount;
+                return null;
+            }
 
-            Console.WriteLine("Your installation has " + iResources.ToString() + " active resources as of today.\n");
-            Console.WriteLine("Press enter to quit");
+            //If a RedirectUrl was returned then your account data is on a different server. Retry with new url.
+            if (rs.RedirectUrl != null)
+            {
+                Uri uri = new Uri(psc.Url);
+                psc.Url = rs.RedirectUrl + uri.LocalPath;
+                return Authenticate(ref psc, accountCode, userName, password);
+            }
 
-            Console.ReadLine();
+            return rs.SessionTicket;
         }
     }
 }

@@ -41,6 +41,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -49,6 +50,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Web References\ProjectorWebServicesV2\Reference.cs">
+      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -348,6 +352,25 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\ProjectorWebServicesV1\OpsProjectorSvc.wsdl" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices0.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices1.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices2.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices3.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices.wsdl" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices4.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices5.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices6.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices7.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices8.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices9.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices10.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices11.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\PwsProjectorServices12.xsd" />
+    <None Include="Web References\ProjectorWebServicesV2\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -366,6 +389,16 @@
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?wsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\ProjectorWebServicesV2</RelPath>
+      <UpdateFromURL>https://secure.projectorpsa.com/OpsProjectorWcfSvc/PwsProjectorServices.svc?wsdl</UpdateFromURL>
+    </WebReferenceUrl>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
