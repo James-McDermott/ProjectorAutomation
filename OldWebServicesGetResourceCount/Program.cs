@@ -50,6 +50,63 @@ namespace ProjectorAutomation
             Console.WriteLine(pwsUsers[0].UserDetail.TimeZoneIdentity.TimeZoneIdentifier);
             Console.WriteLine("\n======================================\n");
             //DumpXML(getUserRs);
+
+            //Get existing timecard for user and total year to date time off
+            //Create timecard request
+            PwsGetTimeCardsRq timeCardsRq = new PwsGetTimeCardsRq();
+            timeCardsRq.SessionTicket = sessionKey;
+            timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
+            timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
+            timeCardsRq.ResourceIdentity = pwsUsers[0].ResourceIdentity;
+
+            //Send request and check response status
+            PwsGetTimeCardsRs timeCardsRs = pwsProjectorServices.PwsGetTimeCards(timeCardsRq);
+            Console.WriteLine(timeCardsRs.Status);
+
+            //Iterate through time off projects and total YTD timeoff
+            PwsTimeEntryTimeOff[] pwsTimeEntryProject = timeCardsRs.TimeEntryTimeOff;
+            int minYtd = 0;
+            foreach (PwsTimeEntryTimeOff timeOff in pwsTimeEntryProject)
+            {
+                minYtd += timeOff.MinutesYearToDate;
+            }
+            Console.WriteLine(minYtd);
+
+            ////Create a new time card - WIP
+            //PwsTimecardDetail pwsTimecardDetail = new PwsTimecardDetail();
+            ////For a new timecard to be valid the below must be set as a minimum
+            //pwsTimecardDetail.WorkMinutes = 450;
+            //pwsTimecardDetail.WorkDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
+            //pwsTimecardDetail.CardStatus = "D";
+
+            ////Also needs the below, each needing at least one of the ID types
+            //PwsProjectRef pwsProjectRef = new PwsProjectRef();
+            //pwsProjectRef.ProjectCode = "";
+            //PwsProjectRateTypeRef pwsProjectRateTypeRef = new PwsProjectRateTypeRef();
+            //pwsProjectRateTypeRef.ExternalSystemIdentifier = "";
+            //PwsProjectTaskRef pwsProjectTaskRef = new PwsProjectTaskRef();
+            //pwsProjectTaskRef.ExternalSystemIdentifier = "";
+            //PwsProjectRoleRef pwsProjectRoleRef = new PwsProjectRoleRef();
+            //pwsProjectRoleRef.ExternalSystemIdentifier = "";
+
+            //pwsTimecardDetail.ProjectIdentity = pwsProjectRef;
+            //pwsTimecardDetail.ProjectRateTypeIdentity = pwsProjectRateTypeRef;
+            //pwsTimecardDetail.ProjectTaskIdentity = pwsProjectTaskRef;
+            //pwsTimecardDetail.RoleIdentity = pwsProjectRoleRef;
+
+            //PwsTimecardDetail[] timeCards = { pwsTimecardDetail };
+
+            //PwsSaveTimeCardsRq timeCardsRq = new PwsSaveTimeCardsRq();
+            //timeCardsRq.SessionTicket = sessionKey;
+            //timeCardsRq.SaveTimeCards = timeCards;
+            //timeCardsRq.ResourceIdentity = pwsUsers[0].ResourceIdentity;
+            //timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
+            //timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
+
+            //PwsSaveTimeCardsRs saveTimeCardsRs = pwsProjectorServices.PwsSaveTimeCards(timeCardsRq);
+            //Console.WriteLine(saveTimeCardsRs.SubmittedFlag.ToString());
+
+            //DumpXML(timeCardsRq);
         }
 
          /* 
