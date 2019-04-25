@@ -13,54 +13,50 @@ namespace ProjectorAutomation
         {
             pwsProjectorServices = new PwsProjectorServices();
             string sessionKey = GenerateSessionKey(pwsProjectorServices, "replaceThis", "replaceThis", "replaceThis");
-
-            //Using session key create and expense report request, and print out request status
             PwsGetExpenseReportsRs pwsGetExpenseReportsRq = GetExpenseReport(sessionKey);
-
-            //Get some user details from user name 
             var userDetails = GetUserDetails("replaceThis", sessionKey);
-            //DumpXML(getUserRs);
+            var existingTimeCard=GetExistingTimeCard(sessionKey, userDetails);
+            var timeOffDuringYearToDate = CalculateTimeOffInYearToDate(existingTimeCard);
+            var newTimeCard = GenerateNewTimeCard();
+            var timeCardSavingResponse = SaveTimeCard(sessionKey, newTimeCard, userDetails);
+        }
 
-            //Get existing timecard for user and total year to date time off
-            var timeCard=GetTimeCard(sessionKey, userDetails);
+        private static PwsSaveTimeCardsRs SaveTimeCard(string sessionKey, PwsTimecardDetail timeCard, PwsUserElement userDetails)
+        {
+            PwsTimecardDetail[] timeCards = { timeCard };
+            PwsSaveTimeCardsRq timeCardsRq = new PwsSaveTimeCardsRq();
+            timeCardsRq.SessionTicket = sessionKey;
+            timeCardsRq.SaveTimeCards = timeCards;
+            timeCardsRq.ResourceIdentity = userDetails.ResourceIdentity;
+            timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
+            timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
+            return pwsProjectorServices.PwsSaveTimeCards(timeCardsRq);
+        }
 
-            var timeOffDuringYearToDate = CalculateTimeOffInYearToDate(timeCard);
+        private static PwsTimecardDetail GenerateNewTimeCard()
+        {
+            //Create a new time card - WIP
+            PwsTimecardDetail pwsTimecardDetail = new PwsTimecardDetail();
+            //For a new timecard to be valid the below must be set as a minimum
+            pwsTimecardDetail.WorkMinutes = 450;
+            pwsTimecardDetail.WorkDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
+            pwsTimecardDetail.CardStatus = "D";
 
-            ////Create a new time card - WIP
-            //PwsTimecardDetail pwsTimecardDetail = new PwsTimecardDetail();
-            ////For a new timecard to be valid the below must be set as a minimum
-            //pwsTimecardDetail.WorkMinutes = 450;
-            //pwsTimecardDetail.WorkDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
-            //pwsTimecardDetail.CardStatus = "D";
+            //Also needs the below, each needing at least one of the ID types
+            PwsProjectRef pwsProjectRef = new PwsProjectRef();
+            pwsProjectRef.ProjectCode = "";
+            PwsProjectRateTypeRef pwsProjectRateTypeRef = new PwsProjectRateTypeRef();
+            pwsProjectRateTypeRef.ExternalSystemIdentifier = "";
+            PwsProjectTaskRef pwsProjectTaskRef = new PwsProjectTaskRef();
+            pwsProjectTaskRef.ExternalSystemIdentifier = "";
+            PwsProjectRoleRef pwsProjectRoleRef = new PwsProjectRoleRef();
+            pwsProjectRoleRef.ExternalSystemIdentifier = "";
 
-            ////Also needs the below, each needing at least one of the ID types
-            //PwsProjectRef pwsProjectRef = new PwsProjectRef();
-            //pwsProjectRef.ProjectCode = "";
-            //PwsProjectRateTypeRef pwsProjectRateTypeRef = new PwsProjectRateTypeRef();
-            //pwsProjectRateTypeRef.ExternalSystemIdentifier = "";
-            //PwsProjectTaskRef pwsProjectTaskRef = new PwsProjectTaskRef();
-            //pwsProjectTaskRef.ExternalSystemIdentifier = "";
-            //PwsProjectRoleRef pwsProjectRoleRef = new PwsProjectRoleRef();
-            //pwsProjectRoleRef.ExternalSystemIdentifier = "";
-
-            //pwsTimecardDetail.ProjectIdentity = pwsProjectRef;
-            //pwsTimecardDetail.ProjectRateTypeIdentity = pwsProjectRateTypeRef;
-            //pwsTimecardDetail.ProjectTaskIdentity = pwsProjectTaskRef;
-            //pwsTimecardDetail.RoleIdentity = pwsProjectRoleRef;
-
-            //PwsTimecardDetail[] timeCards = { pwsTimecardDetail };
-
-            //PwsSaveTimeCardsRq timeCardsRq = new PwsSaveTimeCardsRq();
-            //timeCardsRq.SessionTicket = sessionKey;
-            //timeCardsRq.SaveTimeCards = timeCards;
-            //timeCardsRq.ResourceIdentity = pwsUsers[0].ResourceIdentity;
-            //timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
-            //timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
-
-            //PwsSaveTimeCardsRs saveTimeCardsRs = pwsProjectorServices.PwsSaveTimeCards(timeCardsRq);
-            //Console.WriteLine(saveTimeCardsRs.SubmittedFlag.ToString());
-
-            //DumpXML(timeCardsRq);
+            pwsTimecardDetail.ProjectIdentity = pwsProjectRef;
+            pwsTimecardDetail.ProjectRateTypeIdentity = pwsProjectRateTypeRef;
+            pwsTimecardDetail.ProjectTaskIdentity = pwsProjectTaskRef;
+            pwsTimecardDetail.RoleIdentity = pwsProjectRoleRef;
+            return pwsTimecardDetail;
         }
 
         private static int CalculateTimeOffInYearToDate(PwsGetTimeCardsRs timeCard)
@@ -77,7 +73,7 @@ namespace ProjectorAutomation
             return minYtd;
         }
 
-        private static PwsGetTimeCardsRs GetTimeCard(string sessionKey, PwsUserElement userDetails)
+        private static PwsGetTimeCardsRs GetExistingTimeCard(string sessionKey, PwsUserElement userDetails)
         {
             //Create timecard request
             PwsGetTimeCardsRq timeCardsRq = new PwsGetTimeCardsRq();
