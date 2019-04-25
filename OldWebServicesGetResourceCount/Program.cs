@@ -7,48 +7,18 @@ namespace ProjectorAutomation
 {
     class Program
     {
+        private static PwsProjectorServices pwsProjectorServices;
+
         public static void Main(string[] args)
         {
-            //Initialize necessary user details. Need added progrommatically as readline inconsistent
-            PwsProjectorServices pwsProjectorServices = new PwsProjectorServices();
-            //Console.WriteLine("Username:");
-            string username = "CHANGEME";
-            //Console.WriteLine("Password:");
-            string password = "CHANGEME";
-            //Console.WriteLine("Account:");
-            string account = "CHANGEME";
-            //Authenticate user and print session key
-            Session session = new Session(ref pwsProjectorServices, account, username, password);
-            string sessionKey = session.getSessionTicket();
-            Console.WriteLine(sessionKey);
-            //Using session key create and expense report request, and print out request status
-            PwsGetExpenseReportsRq pwsGetExpenseReportsRq = new PwsGetExpenseReportsRq();
-            pwsGetExpenseReportsRq.SessionTicket = sessionKey;
-            PwsGetExpenseReportsRs pwsGetExpenseReportsRs = pwsProjectorServices.PwsGetExpenseReports(pwsGetExpenseReportsRq);
-            Console.WriteLine(pwsGetExpenseReportsRs.Status);
+            pwsProjectorServices = new PwsProjectorServices();
+            string sessionKey = GenerateSessionKey(pwsProjectorServices, "replaceThis", "replaceThis", "replaceThis");
 
-            //Get some user details from user name and print to console. Needs added progrommatically as readline inconsistent
-            PwsGetUserRq getUserRq = new PwsGetUserRq();
-            getUserRq.SessionTicket = sessionKey;
-            PwsUserRef userRef = new PwsUserRef();
-            userRef.UserDisplayName = "CHANGEME";
-            PwsUserRef[] userArray = new PwsUserRef[] { userRef };
-            getUserRq.UserIdentities = userArray;
-            PwsGetUserRs getUserRs = pwsProjectorServices.PwsGetUser(getUserRq);
-            Console.WriteLine(getUserRs.Status);
-            PwsUserElement[] pwsUsers = getUserRs.Users;
-            Console.WriteLine("\n============ User Details ============\n");
-            Console.WriteLine("User:");
-            Console.WriteLine(pwsUsers[0].ResourceIdentity.ResourceDisplayName);
-            Console.WriteLine("\nEmail Address:");
-            Console.WriteLine(pwsUsers[0].UserDetail.EmailAddress);
-            Console.WriteLine("\nMobile:");
-            Console.WriteLine(pwsUsers[0].UserDetail.MobilePhone);
-            Console.WriteLine("\nStart Date:");
-            Console.WriteLine(pwsUsers[0].UserDetail.StartDate.ToString());
-            Console.WriteLine("\nTime Zone:");
-            Console.WriteLine(pwsUsers[0].UserDetail.TimeZoneIdentity.TimeZoneIdentifier);
-            Console.WriteLine("\n======================================\n");
+            //Using session key create and expense report request, and print out request status
+            PwsGetExpenseReportsRs pwsGetExpenseReportsRq = GetExpenseReport(sessionKey);
+
+            //Get some user details from user name 
+            var userDetails = GetUserDetails("replaceThis", sessionKey);
             //DumpXML(getUserRs);
 
             //Get existing timecard for user and total year to date time off
@@ -57,7 +27,7 @@ namespace ProjectorAutomation
             timeCardsRq.SessionTicket = sessionKey;
             timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
             timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
-            timeCardsRq.ResourceIdentity = pwsUsers[0].ResourceIdentity;
+            timeCardsRq.ResourceIdentity = userDetails[0].ResourceIdentity;
 
             //Send request and check response status
             PwsGetTimeCardsRs timeCardsRs = pwsProjectorServices.PwsGetTimeCards(timeCardsRq);
@@ -109,12 +79,12 @@ namespace ProjectorAutomation
             //DumpXML(timeCardsRq);
         }
 
-         /* 
-         *Dump the xml of the request/response passed to it
-         *This is a very large xml, for debug only       
-         *        
-         * requestOrResponseObject - the response/request to be dumped to XML       
-         */
+        /* 
+        *Dump the xml of the request/response passed to it
+        *This is a very large xml, for debug only       
+        *        
+        * requestOrResponseObject - the response/request to be dumped to XML       
+        */
         private static void DumpXML(object requestOrResponseObject)
         {
             var serxml = new System.Xml.Serialization.XmlSerializer(requestOrResponseObject.GetType());
@@ -123,6 +93,35 @@ namespace ProjectorAutomation
             string xml = Encoding.UTF8.GetString(ms.ToArray());
             Console.WriteLine(xml);
             Console.WriteLine("");
+        }
+
+        private static string GenerateSessionKey(PwsProjectorServices pwsProjectorServices, string username, string password, string accountCode)
+        {
+            //Authenticate user and print session key
+            Session session = new Session(ref pwsProjectorServices, accountCode, username, password);
+            string sessionKey = session.GetSessionTicket();
+            return sessionKey;
+            //Using session key create and expense report request, and print out request status
+        }
+
+        private static PwsGetExpenseReportsRs GetExpenseReport(string sessionKey)
+        {
+            //Using session key create and expense report request, and print out request status
+            PwsGetExpenseReportsRq pwsGetExpenseReportsRq = new PwsGetExpenseReportsRq();
+            pwsGetExpenseReportsRq.SessionTicket = sessionKey;
+            return pwsProjectorServices.PwsGetExpenseReports(pwsGetExpenseReportsRq);
+        }
+
+        private static PwsUserElement[] GetUserDetails(string userName, string sessionKey)
+        {
+            PwsGetUserRq getUserRq = new PwsGetUserRq();
+            getUserRq.SessionTicket = sessionKey;
+            PwsUserRef userRef = new PwsUserRef();
+            userRef.UserDisplayName = userName;
+            PwsUserRef[] userArray = new PwsUserRef[] { userRef };
+            getUserRq.UserIdentities = userArray;
+            PwsGetUserRs getUserRs = pwsProjectorServices.PwsGetUser(getUserRq);
+            return getUserRs.Users;
         }
     }
 }

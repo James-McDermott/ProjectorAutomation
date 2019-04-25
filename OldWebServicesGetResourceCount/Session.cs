@@ -16,7 +16,7 @@ namespace ProjectorAutomation
             this.password = password;
         }
 
-        public string getSessionTicket()
+        public string GetSessionTicket()
         {
             PwsAuthenticateRs rs = psc.PwsAuthenticate(new PwsAuthenticateRq()
             {
@@ -42,7 +42,7 @@ namespace ProjectorAutomation
             {
                 Uri uri = new Uri(psc.Url);
                 psc.Url = rs.RedirectUrl + uri.LocalPath;
-                return getSessionTicket();
+                return GetSessionTicket();
             }
 
             return rs.SessionTicket;
