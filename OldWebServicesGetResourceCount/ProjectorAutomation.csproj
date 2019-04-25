@@ -53,6 +53,9 @@
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Session.cs" />
+    <Compile Include="Job.cs" />
+    <Compile Include="OverallReport.cs" />
+    <Compile Include="Person.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
