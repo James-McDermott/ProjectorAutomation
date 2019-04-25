@@ -22,25 +22,9 @@ namespace ProjectorAutomation
             //DumpXML(getUserRs);
 
             //Get existing timecard for user and total year to date time off
-            //Create timecard request
-            PwsGetTimeCardsRq timeCardsRq = new PwsGetTimeCardsRq();
-            timeCardsRq.SessionTicket = sessionKey;
-            timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
-            timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
-            timeCardsRq.ResourceIdentity = userDetails[0].ResourceIdentity;
+            var timeCard=GetTimeCard(sessionKey, userDetails);
 
-            //Send request and check response status
-            PwsGetTimeCardsRs timeCardsRs = pwsProjectorServices.PwsGetTimeCards(timeCardsRq);
-            Console.WriteLine(timeCardsRs.Status);
-
-            //Iterate through time off projects and total YTD timeoff
-            PwsTimeEntryTimeOff[] pwsTimeEntryProject = timeCardsRs.TimeEntryTimeOff;
-            int minYtd = 0;
-            foreach (PwsTimeEntryTimeOff timeOff in pwsTimeEntryProject)
-            {
-                minYtd += timeOff.MinutesYearToDate;
-            }
-            Console.WriteLine(minYtd);
+            var timeOffDuringYearToDate = CalculateTimeOffInYearToDate(timeCard);
 
             ////Create a new time card - WIP
             //PwsTimecardDetail pwsTimecardDetail = new PwsTimecardDetail();
@@ -79,6 +63,33 @@ namespace ProjectorAutomation
             //DumpXML(timeCardsRq);
         }
 
+        private static int CalculateTimeOffInYearToDate(PwsGetTimeCardsRs timeCard)
+        {
+            //Iterate through time off projects and total YTD timeoff
+            PwsTimeEntryTimeOff[] pwsTimeEntryProject = timeCard.TimeEntryTimeOff;
+            int minYtd = 0;
+
+            foreach (PwsTimeEntryTimeOff timeOff in pwsTimeEntryProject)
+            {
+                minYtd += timeOff.MinutesYearToDate;
+            }
+
+            return minYtd;
+        }
+
+        private static PwsGetTimeCardsRs GetTimeCard(string sessionKey, PwsUserElement userDetails)
+        {
+            //Create timecard request
+            PwsGetTimeCardsRq timeCardsRq = new PwsGetTimeCardsRq();
+            timeCardsRq.SessionTicket = sessionKey;
+            timeCardsRq.StartDate = DateTime.Parse("2019-04-24T00:00:00Z").ToUniversalTime();
+            timeCardsRq.EndDate = DateTime.Parse("2019-04-25T00:00:00Z").ToUniversalTime();
+            timeCardsRq.ResourceIdentity = userDetails.ResourceIdentity;
+
+            //Send request and check response status
+            return pwsProjectorServices.PwsGetTimeCards(timeCardsRq);
+        }
+
         /* 
         *Dump the xml of the request/response passed to it
         *This is a very large xml, for debug only       
@@ -112,7 +123,7 @@ namespace ProjectorAutomation
             return pwsProjectorServices.PwsGetExpenseReports(pwsGetExpenseReportsRq);
         }
 
-        private static PwsUserElement[] GetUserDetails(string userName, string sessionKey)
+        private static PwsUserElement GetUserDetails(string userName, string sessionKey)
         {
             PwsGetUserRq getUserRq = new PwsGetUserRq();
             getUserRq.SessionTicket = sessionKey;
@@ -121,7 +132,7 @@ namespace ProjectorAutomation
             PwsUserRef[] userArray = new PwsUserRef[] { userRef };
             getUserRq.UserIdentities = userArray;
             PwsGetUserRs getUserRs = pwsProjectorServices.PwsGetUser(getUserRq);
-            return getUserRs.Users;
+            return getUserRs.Users[0];
         }
     }
 }
